@@ -2,14 +2,18 @@
 
 function AfficheTab($tab, $m, $n, $nmJoueur)
 {
-    echo("     Joueur " . $nmJoueur . "\n");
+    echo("         Joueur " . $nmJoueur . "\n");
+    echo("------------------------"  . "\n");
+    echo("    A B C D E F G H I J" . "\n");
+    echo("    | | | | | | | | | |" . "\n");
     for ($i = 0; $i < $m; $i++) {
+        echo $i . " - ";
         for ($j = 0; $j < $n; $j++) {
             echo $tab[$i][$j] . " ";
         }
         echo "\n";
     }
-    echo "-------------------\n";
+    echo "------------------------\n";
 }
 
 function InitialiseGrille()
@@ -72,7 +76,7 @@ function PoseBateau(&$grille)
                 $incorrect = false;
 
             } else {
-                echo("Il y a déjà deux sous marin, il ne peut y en avoir que deux \n");
+                echo("Il y a déjà deux sous marins, il ne peut y en avoir que deux \n");
             }
         } else if ($nomBateau == "torpilleur" or $nomBateau == "croiseur" or $nomBateau == "porte-avion") {
             if (NombreBateau($grille, $nomBateau) < 1) {
@@ -95,18 +99,26 @@ function PositionneAnyBateau(&$grille, $nomBateau)
     while ($posCorrect == false)
     {
         $l = readline("Sur quelle ligne voulez vous positionner le bateau ? ");
-        while ($l < 0 or $l > 10) {
-            $l = readline("Ce n'est pas une position valide, \n Sur quelle ligne voulez vous repositionner le bateau ? ");
+        while ($l < 0 or $l > 9) {
+            $l = readline("Ce n'est pas une position valide, \nSur quelle ligne voulez vous repositionner le bateau ? ");
         }
-        $c = readline("Sur quelle colonne voulez vous positionner le bateau ? ");
-        while ($c < 0 or $c > 10) {
-            $c = readline("Ce n'est pas une position valide, \n Sur quelle colonne voulez vous repositionner le bateau ? ");
+        $c = 10;
+        $erreur = false;
+        while ($c < 0 or $c > 9) {
+            if (!$erreur)
+                $c = readline("Sur quelle colonne voulez vous positionner le bateau ? ");
+            if($erreur)
+                $c = readline("Ce n'est pas une position valide, \nSur quelle colonne voulez vous repositionner le bateau ? ");
+
+            $c = NumColone($c);
+            if ($c == 10)
+                $erreur = true;
         }
 
         $position = readline("Voulez-vous postionner le bateau en vertical ? (oui/non) ");
         while ($position != 'oui' and $position != 'non')
         {
-            $position = readline("Ce n'est pas une réponse valide, \n Voulez-vous postionner le bateau en horizontal ? (oui/non UNIQUEMENT) ");
+            $position = readline("Ce n'est pas une réponse valide, \nVoulez-vous postionner le bateau en horizontal ? (oui/non UNIQUEMENT) ");
         }
 
         if ($position == 'oui')
@@ -154,12 +166,55 @@ function PositionneAnyBateau(&$grille, $nomBateau)
     }
 }
 
+function NumColone($numColone)
+{
+    switch ($numColone) {
+        case "A":
+            $numColone = 0;
+            break;
+        case "B":
+            $numColone = 1;
+            break;
+        case "C":
+            $numColone = 2;
+            break;
+        case "D":
+            $numColone = 3;
+            break;
+        case "E":
+            $numColone = 4;
+            break;
+        case "F":
+            $numColone = 5;
+            break;
+        case "G":
+            $numColone = 6;
+            break;
+        case "H":
+            $numColone = 7;
+            break;
+        case "I":
+            $numColone = 8;
+            break;
+        case "J":
+            $numColone = 9;
+            break;
+        default:
+            $numColone = 10;
+            break;
+
+    }
+    return $numColone;
+}
+
 function Tire(&$grille)
 {
     $TireCorrect = false;
     while ($TireCorrect == false){
         $l_tire = readline('Sur quelle ligne souhaitez vous tirer ?');
         $c_tire = readline('Sur quelle colonne souhaitez vous tirer ?');
+
+        $c_tire = NumColone($c_tire);
 
         if($grille[$l_tire][$c_tire] == 'X' or $grille[$l_tire][$c_tire] == 'V' ){
             echo('Vous avez déjà tiré ici');
@@ -207,6 +262,7 @@ function Jeu($joueur1,$joueur2){
         $echange = $temp;
     }
 }
+
 
 
 
