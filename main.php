@@ -59,8 +59,7 @@ function NombreBateau($grille, $nomBateau)
         }
 
     }
-    $compteurBateau = $compteurBateau / $codeBateau;
-    return $compteurBateau;
+    return floor($compteurBateau / $codeBateau);
 }
 
 function PoseBateau(&$grille)
@@ -75,7 +74,8 @@ function PoseBateau(&$grille)
             if (NombreBateau($grille, $nomBateau) < 2) {
                 $incorrect = false;
 
-            } else {
+            }
+            else {
                 echo("Il y a déjà deux sous marins, il ne peut y en avoir que deux \n");
             }
         } else if ($nomBateau == "torpilleur" or $nomBateau == "croiseur" or $nomBateau == "porte-avion") {
@@ -98,30 +98,30 @@ function PositionneAnyBateau(&$grille, $nomBateau)
     $posCorrect = false;
     while ($posCorrect == false)
     {
-        $l = readline("Sur quelle ligne voulez vous positionner le bateau ? ");
+        $l = readline("Sur quelle ligne voulez vous positionner le $nomBateau ? ");
         while ($l < 0 or $l > 9) {
-            $l = readline("Ce n'est pas une position valide, \nSur quelle ligne voulez vous repositionner le bateau ? ");
+            $l = readline("Ce n'est pas une position valide, \nSur quelle ligne voulez vous repositionner le $nomBateau ? ");
         }
         $c = 10;
         $erreur = false;
         while ($c < 0 or $c > 9) {
             if (!$erreur)
-                $c = readline("Sur quelle colonne voulez vous positionner le bateau ? ");
+                $c = readline("Sur quelle colonne voulez vous positionner le $nomBateau ? ");
             if($erreur)
-                $c = readline("Ce n'est pas une position valide, \nSur quelle colonne voulez vous repositionner le bateau ? ");
+                $c = readline("Ce n'est pas une position valide, \nSur quelle colonne voulez vous repositionner le $nomBateau ? ");
 
             $c = NumColone($c);
             if ($c == 10)
                 $erreur = true;
         }
 
-        $position = readline("Voulez-vous postionner le bateau en vertical ? (oui/non) ");
-        while ($position != 'oui' and $position != 'non')
+        $vertical = readline("Voulez-vous postionner le $nomBateau en vertical ? (oui/non) ");
+        while ($vertical != 'oui' and $vertical != 'non')
         {
-            $position = readline("Ce n'est pas une réponse valide, \nVoulez-vous postionner le bateau en horizontal ? (oui/non UNIQUEMENT) ");
+            $vertical = readline("Ce n'est pas une réponse valide, \nVoulez-vous postionner le $nomBateau en horizontal ? (oui/non UNIQUEMENT) ");
         }
 
-        if ($position == 'oui')
+        if ($vertical == 'oui')
         {
             $direction = $l;
         } else {
@@ -139,14 +139,14 @@ function PositionneAnyBateau(&$grille, $nomBateau)
         if ($sortPlateau == false) {
             $posCorrect = true;
             for ($i = $direction; $i != $direction + CodeBateau($nomBateau); $i += 1) {
-                if ($position == 'oui') {
+                if ($vertical == 'oui') {
                     $l = $i;
                 } else {
                     $c = $i;
                 }
 
                 if ($grille[$l][$c] != 0) {
-                    echo("Le bateau chevauche au moins un autre bateau, veuillez recommencer \n");
+                    echo("le $nomBateau chevauche au moins un autre bateau, veuillez recommencer \n");
                     $posCorrect = false;
                     break;
                 }
@@ -155,14 +155,15 @@ function PositionneAnyBateau(&$grille, $nomBateau)
         }
     }
     for ($i = $direction; $i != $direction + CodeBateau($nomBateau); $i += 1) {
-        if ($position == 'oui') {
+        if ($vertical == 'oui') {
             $l = $i;
         }
         else
         {
             $c = $i;
         }
-        $grille[$l][$c] = CodeBateau($nomBateau);
+       $grille[$l][$c] = CodeBateau($nomBateau);
+
     }
 }
 
@@ -236,9 +237,11 @@ function Tire(&$grille)
     }
 }
 
-function Jeu($joueur1,$joueur2){
+function Jeu(){
     $grilleJ1=initialisegrille();
+    $grilleJ1ATK=initialisegrille();
     $grilleJ2=initialisegrille();
+    $grillleJ2ATK=initialisegrille();
 
 
     //PositionneAnyBateau(&$grilleJ1, $nomBateau)
@@ -248,6 +251,10 @@ function Jeu($joueur1,$joueur2){
     $joueur = 1;
     $echange = 2;
     while ($fin = false){
+        while(tour)
+        {
+            
+        }
         if ($joueur = 1){
             echo 'Joueur 1 à vous de tirez.';
             Tire($grilleJ2);
@@ -267,6 +274,10 @@ function Jeu($joueur1,$joueur2){
 
 
 $grilleJ1 = InitialiseGrille();
-while(true)
+echo NombreBateau($grilleJ1,"sous-marin")."\n";
+PoseBateau($grilleJ1);
+echo NombreBateau($grilleJ1,"sous-marin")."\n";
+PoseBateau($grilleJ1);
+echo NombreBateau($grilleJ1,"sous-marin")."\n";
+while (true)
     PoseBateau($grilleJ1);
-
