@@ -30,16 +30,19 @@ function CodeBateau($nomBateau)
 {
     switch ($nomBateau) {
         case "torpilleur":
-            $codeBateau = 2;
+            $codeBateau = 22;
             break;
         case "sous-marin":
-            $codeBateau = 3;
+            $codeBateau = 33;
             break;
         case "croiseur":
-            $codeBateau = 4;
+            $codeBateau = 44;
             break;
         case "porte-avion":
-            $codeBateau = 5;
+            $codeBateau = 55;
+            break;
+        case "sous-marin2":
+            $codeBateau = 63;
             break;
     }
     return $codeBateau;
@@ -48,9 +51,20 @@ function CodeBateau($nomBateau)
 function NombreBateau($grille, $nomBateau)
 {
     $compteurBateau = 0;
+    if ($nomBateau == "sous-marin")
+    {
+        $codeBateau = 6;
+        for ($i = 0; $i < 10; $i++) {
+            for ($j = 0; $j < 10; $j++) {
+                if ($grille[$i][$j] == $codeBateau) {
+                    $compteurBateau += 1;
+                }
+            }
 
-    $codeBateau = CodeBateau($nomBateau);
+        }
+    }
 
+    $codeBateau = intdiv(CodeBateau($nomBateau),10) % 10 ;
     for ($i = 0; $i < 10; $i++) {
         for ($j = 0; $j < 10; $j++) {
             if ($grille[$i][$j] == $codeBateau) {
@@ -71,7 +85,12 @@ function PoseBateau(&$grille)
         AfficheTab($grille, 10, 10, 1);
         $nomBateau = readline("Quel Bateau souhaitez vous poser ? ");
         if ($nomBateau == "sous-marin") {
-            if (NombreBateau($grille, $nomBateau) < 2) {
+            if (NombreBateau($grille, $nomBateau) == 0) {
+                $incorrect = false;
+
+            }
+            else if (NombreBateau($grille, $nomBateau) == 1) {
+                $nomBateau = "sous-marin2";
                 $incorrect = false;
 
             }
@@ -127,7 +146,7 @@ function PositionneAnyBateau(&$grille, $nomBateau)
         } else {
             $direction = $c;
         }
-        if ($direction > 10 - CodeBateau($nomBateau))
+        if ($direction > 10 - (CodeBateau($nomBateau ) % 10))
         {
             echo("la position sort du plateau, veuillez recommencer \n");
             $sortPlateau = true;
@@ -138,7 +157,7 @@ function PositionneAnyBateau(&$grille, $nomBateau)
         }
         if ($sortPlateau == false) {
             $posCorrect = true;
-            for ($i = $direction; $i != $direction + CodeBateau($nomBateau); $i += 1) {
+            for ($i = $direction; $i != $direction + (CodeBateau($nomBateau)%10); $i += 1) {
                 if ($vertical == 'oui') {
                     $l = $i;
                 } else {
@@ -154,7 +173,7 @@ function PositionneAnyBateau(&$grille, $nomBateau)
             }
         }
     }
-    for ($i = $direction; $i != $direction + CodeBateau($nomBateau); $i += 1) {
+    for ($i = $direction; $i != $direction + (CodeBateau($nomBateau)%10); $i += 1) {
         if ($vertical == 'oui') {
             $l = $i;
         }
@@ -162,7 +181,7 @@ function PositionneAnyBateau(&$grille, $nomBateau)
         {
             $c = $i;
         }
-       $grille[$l][$c] = CodeBateau($nomBateau);
+       $grille[$l][$c] = (intdiv(CodeBateau($nomBateau),10)%10);
 
     }
 }
@@ -253,7 +272,7 @@ function Jeu(){
     while ($fin = false){
         while(tour)
         {
-            
+
         }
         if ($joueur = 1){
             echo 'Joueur 1 à vous de tirez.';
@@ -271,13 +290,9 @@ function Jeu(){
 }
 
 
-
+// bon merci bien x) j'arrivais pas a prendre du recul, jvais manger et je re (jvais certainement rester sur ça quasi toute l'aprem le rendu est demain ..xD++
 
 $grilleJ1 = InitialiseGrille();
-echo NombreBateau($grilleJ1,"sous-marin")."\n";
-PoseBateau($grilleJ1);
-echo NombreBateau($grilleJ1,"sous-marin")."\n";
-PoseBateau($grilleJ1);
-echo NombreBateau($grilleJ1,"sous-marin")."\n";
+
 while (true)
     PoseBateau($grilleJ1);
