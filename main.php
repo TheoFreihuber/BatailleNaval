@@ -52,17 +52,17 @@ function NombreBateau($grille, $nomBateau)
 {
     $compteurBateau = 0;
     if ($nomBateau == "sous-marin")
-    {
-        $codeBateau = 6;
-        for ($i = 0; $i < 10; $i++) {
-            for ($j = 0; $j < 10; $j++) {
-                if ($grille[$i][$j] == $codeBateau) {
-                    $compteurBateau += 1;
-                }
+{
+    $codeBateau = 6;
+    for ($i = 0; $i < 10; $i++) {
+        for ($j = 0; $j < 10; $j++) {
+            if ($grille[$i][$j] == $codeBateau) {
+                $compteurBateau += 1;
             }
-
         }
+
     }
+}
 
     $codeBateau = intdiv(CodeBateau($nomBateau),10) % 10 ;
     for ($i = 0; $i < 10; $i++) {
@@ -78,38 +78,42 @@ function NombreBateau($grille, $nomBateau)
 
 function PoseBateau(&$grille)
 {
-    $incorrect = true;
-    while ($incorrect)
-    {
-        echo("Disposition actuelle \n");
-        AfficheTab($grille, 10, 10, 1);
-        $nomBateau = readline("Quel Bateau souhaitez vous poser ? ");
-        if ($nomBateau == "sous-marin") {
-            if (NombreBateau($grille, $nomBateau) == 0) {
-                $incorrect = false;
+    $compteurBateau = 0;
+    while ($compteurBateau < 5) {
 
-            }
-            else if (NombreBateau($grille, $nomBateau) == 1) {
-                $nomBateau = "sous-marin2";
-                $incorrect = false;
 
-            }
-            else {
-                echo("Il y a déjà deux sous marins, il ne peut y en avoir que deux \n");
-            }
-        } else if ($nomBateau == "torpilleur" or $nomBateau == "croiseur" or $nomBateau == "porte-avion") {
-            if (NombreBateau($grille, $nomBateau) < 1) {
-                $incorrect = false;
+        $incorrect = true;
+        while ($incorrect) {
+            echo("Disposition actuelle \n");
+            AfficheTab($grille, 10, 10, 1);
+            echo 'il vous reste '. (5 - $compteurBateau). " bateau a poser \n" ;
+            $nomBateau = readline("Quel Bateau souhaitez vous poser ? ");
+            if ($nomBateau == "sous-marin") {
+                if (NombreBateau($grille, $nomBateau) == 0) {
+                    $incorrect = false;
+                    $compteurBateau++;
+
+                } else if (NombreBateau($grille, $nomBateau) == 1) {
+                    $nomBateau = "sous-marin2";
+                    $incorrect = false;
+                    $compteurBateau++;
+
+                } else {
+                    echo("Il y a déjà deux sous marins, il ne peut y en avoir que deux \n");
+                }
+            } else if ($nomBateau == "torpilleur" or $nomBateau == "croiseur" or $nomBateau == "porte-avion") {
+                if (NombreBateau($grille, $nomBateau) < 1) {
+                    $incorrect = false;
+                    $compteurBateau++;
+                } else {
+                    echo("Il y a déjà un bateau comme ça, il ne peut y avoir qu'une seule fois ce type de bateau \n");
+                }
             } else {
-                echo("Il y a déjà un bateau comme ça, il ne peut y avoir qu'une seule fois ce type de bateau \n");
+                echo "nom de bateau incorrect \n";
             }
         }
-        else
-        {
-            echo "nom de bateau incorrect \n";
-        }
+        PositionneAnyBateau($grille, $nomBateau);
     }
-    PositionneAnyBateau($grille, $nomBateau);
 }
 
 function PositionneAnyBateau(&$grille, $nomBateau)
@@ -227,32 +231,77 @@ function NumColone($numColone)
     return $numColone;
 }
 
-function Tire(&$grille)
+function Tire(&$grille, &$grilleATK)
 {
     $TireCorrect = false;
-    while ($TireCorrect == false){
-        $l_tire = readline('Sur quelle ligne souhaitez vous tirer ?');
-        $c_tire = readline('Sur quelle colonne souhaitez vous tirer ?');
+    while ($TireCorrect == false) {
+        $toucher = true;
+        while ($toucher) {
+            AfficheTab($grilleATK,10,10,1);
+            $l_tire = readline('Sur quelle ligne souhaitez vous tirer ?');
+            $c_tire = readline('Sur quelle colonne souhaitez vous tirer ?');
 
-        $c_tire = NumColone($c_tire);
+            $c_tire = NumColone($c_tire);
 
-        if($grille[$l_tire][$c_tire] == 'X' or $grille[$l_tire][$c_tire] == 'V' ){
-            echo('Vous avez déjà tiré ici');
-            $TireCorrect = false;
+            if ($grille[$l_tire][$c_tire] == 'X' or $grille[$l_tire][$c_tire] == 'V') {
+                echo('Vous avez déjà tiré ici'. "\n");
+                $TireCorrect = false;
+            } else if ($grille[$l_tire][$c_tire] == 0) {
+                $grille[$l_tire][$c_tire] = 'X';
+                $grilleATK[$l_tire][$c_tire] = 'X';
+                echo("Loupé, c'est au tour de l'adversaire \n");
+                $TireCorrect = true;
+                $toucher = false;
+            } else {
+                $grille[$l_tire][$c_tire] = 'V';
+                $grilleATK[$l_tire][$c_tire] = 'V';
+                echo('Touché, vous pouvez re-tirer'. "\n");
+                $TireCorrect = true;
+                Couler($grille,"torpilleur");
+                Couler($grille,"sous-marin");
+                Couler($grille,"sous-marin2");
+                Couler($grille,"croiseur");
+                Couler($grille,"porte-avion");
+
+
+            }
+
+        }
+    }
+}
+
+function Couler($grille, $nomBateau)
+{
+    $compteurBateau = 0;
+    $codeBateau = intdiv(CodeBateau($nomBateau),10) % 10 ;
+    for ($i = 0; $i < 10; $i++) {
+        for ($j = 0; $j < 10; $j++) {
+            if ($grille[$i][$j] == $codeBateau) {
+                $compteurBateau += 1;
+            }
         }
 
-        if($grille[$l_tire][$c_tire] == 0){
-            $grille[$l_tire][$c_tire] = 'X';
-            echo('Loupé');
-            $TireCorrect = true;
+    }
+    if ($compteurBateau == 0)
+    {
+        echo("Vous avez couler le $nomBateau \n");
+    }
+}
+
+function FinDeJeu($grille)
+{
+    for ($i = 0; $i < 10; $i++) {
+        for ($j = 0; $j < 10; $j++) {
+            if ($grille[$i][$j] == 2 or $grille[$i][$j] == 3 or $grille[$i][$j] == 4 or $grille[$i][$j] == 5 or $grille[$i][$j] == 6)
+            {
+                $compteurBateau += 1;
+            }
         }
 
-        if($grille[$l_tire][$c_tire] != 0 and $grille[$l_tire][$c_tire] != 'X' and $grille[$l_tire][$c_tire] != 'V' ){
-            $grille[$l_tire][$c_tire] = 'V';
-            echo('Touché');
-            $TireCorrect = true;
-        }
-
+    }
+    if ($compteurBateau == 0)
+    {
+        echo("Il n'y a plus aucun bateau \n");
     }
 }
 
@@ -263,24 +312,21 @@ function Jeu(){
     $grillleJ2ATK=initialisegrille();
 
 
-    //PositionneAnyBateau(&$grilleJ1, $nomBateau)
-    //PositionneAnyBateau(&$grilleJ2, $nomBateau)
+    PoseBateau($grilleJ1);
+    PoseBateau($grilleJ2);
 
     $fin = false;
     $joueur = 1;
     $echange = 2;
-    while ($fin = false){
-        while(tour)
+    while (!$fin)
+    {
+        if ($joueur == 1)
         {
-
+            Tire($grilleJ2, $grilleJ2ATK);
         }
-        if ($joueur = 1){
-            echo 'Joueur 1 à vous de tirez.';
-            Tire($grilleJ2);
-        }
-        elseif ($joueur = 2){
-            echo 'Joueur 2 à vous de tirez.';
-            Tire($grilleJ1);
+        else
+        {
+            Tire($grilleJ1, $grilleJ1ATK);
         }
 
         $temp = $joueur;
@@ -290,9 +336,11 @@ function Jeu(){
 }
 
 
-// bon merci bien x) j'arrivais pas a prendre du recul, jvais manger et je re (jvais certainement rester sur ça quasi toute l'aprem le rendu est demain ..xD++
+
 
 $grilleJ1 = InitialiseGrille();
+$grilleJ1ATK = InitialiseGrille();
 
-while (true)
-    PoseBateau($grilleJ1);
+PoseBateau($grilleJ1);
+
+Tire($grilleJ1, $grilleJ1ATK);
