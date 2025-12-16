@@ -122,7 +122,7 @@ function PositionneAnyBateau(&$grille, $nomBateau)
     while ($posCorrect == false)
     {
         $l = readline("Sur quelle ligne voulez vous positionner le $nomBateau ? ");
-        while ($l < 0 or $l > 9) {
+        while (!(ctype_digit((string)$l)) or $l < 0 or $l > 9) {
             $l = readline("Ce n'est pas une position valide, \nSur quelle ligne voulez vous repositionner le $nomBateau ? ");
         }
         $c = 10;
@@ -257,15 +257,14 @@ function Tire(&$grille, &$grilleATK)
                 $grilleATK[$l_tire][$c_tire] = 'V';
                 echo('Touché, vous pouvez re-tirer'. "\n");
                 $TireCorrect = true;
+
                 Couler($grille,"torpilleur");
                 Couler($grille,"sous-marin");
                 Couler($grille,"sous-marin2");
                 Couler($grille,"croiseur");
                 Couler($grille,"porte-avion");
 
-
             }
-
         }
     }
 }
@@ -285,6 +284,7 @@ function Couler($grille, $nomBateau)
     if ($compteurBateau == 0)
     {
         echo("Vous avez couler le $nomBateau \n");
+        FinDeJeu($grille);
     }
 }
 
@@ -301,7 +301,7 @@ function FinDeJeu($grille)
     }
     if ($compteurBateau == 0)
     {
-        echo("Il n'y a plus aucun bateau \n");
+        echo("Bien jouer vous avez gagner \n");
     }
 }
 
