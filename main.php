@@ -239,11 +239,26 @@ function Tire(&$grille, &$grilleATK)
         while ($toucher) {
             AfficheTab($grilleATK,10,10,1);
             $l_tire = readline('Sur quelle ligne souhaitez vous tirer ?');
-            $c_tire = readline('Sur quelle colonne souhaitez vous tirer ?');
+            while (!(ctype_digit((string)$l_tire)) or $l_tire < 0 or $l_tire > 9) {
+                $l_tire = readline("Ce n'est pas une ligne valide. \nSur quelle ligne souhaitez vous tirer ?");
+            }
 
-            $c_tire = NumColone($c_tire);
 
-            if ($grille[$l_tire][$c_tire] == 'X' or $grille[$l_tire][$c_tire] == 'V') {
+            $c_tire = 10;
+            $erreur = false;
+            while ($c_tire < 0 or $c_tire > 9) {
+                if (!$erreur)
+                    $c_tire = readline('Sur quelle colonne souhaitez vous tirer ?');
+                if($erreur)
+                    $c_tire = readline("Ce n'est pas une colone valide. \nSur quelle colonne souhaitez vous tirer ?");
+
+                $c_tire = NumColone($c_tire);
+                if ($c_tire == 10)
+                    $erreur = true;
+            }
+
+
+                if ($grille[$l_tire][$c_tire] == 'X' or $grille[$l_tire][$c_tire] == 'V') {
                 echo('Vous avez déjà tiré ici'. "\n");
                 $TireCorrect = false;
             } else if ($grille[$l_tire][$c_tire] == 0) {
